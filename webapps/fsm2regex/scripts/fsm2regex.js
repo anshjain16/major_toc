@@ -77,6 +77,7 @@ function onAutomatonChange() {
 
 function validateFsm() {
   var fsm = $("#fsm").val();
+  console.log(fsm);
 
   if (fsm.length === 0) {
     $("#fsm").parent().removeClass("success error");
@@ -103,7 +104,7 @@ function validateFsm() {
 
 function validateRegex() {
   var regex = $("#regex").val();
-
+  console.log(regex)
   if (regex.length === 0) {
     $("#regex").parent().removeClass("success error");
     $("#fsm").parent().removeClass("success error");

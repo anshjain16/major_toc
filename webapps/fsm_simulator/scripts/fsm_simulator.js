@@ -239,6 +239,7 @@ $("#generateRegex").click(function() {
 
 function generateAutomaton(fsmType) {
   automaton = noam.fsm.createRandomFsm(fsmType, 4, 3, 3);
+  console.log(fsmType, "here")
   $("#fsm").val(noam.fsm.serializeFsmToString(automaton));
   $("#fsm").scrollTop(0);
   $("#fsm").focus();
@@ -276,7 +277,7 @@ $("#createAutomaton").click(function() {
   } else {
     automaton = noam.fsm.parseFsmFromString($("#fsm").val());
   }
-
+  console.log($("#fsm").val(), automaton);
   initialize();
   drawGraph();
   resetAutomaton();
@@ -362,3 +363,27 @@ function validateRegex() {
     }
   }
 }
+
+function newDfa() {
+  automaton = noam.fsm.createRandomFsm('DFA', 4, 3, 3);
+  $("#mydfa").val(noam.fsm.serializeFsmToString(automaton))
+  console.log(automaton)
+  mydfa = noam.fsm.serializeFsmToString(automaton)
+  console.log(mydfa)
+}
+
+
+var numStates = 0;
+var transitions = {};
+
+$("#createmydfa").click(function() {
+  console.log('called')
+  newDfa();
+  initialize();
+  drawGraph();
+  resetAutomaton(); 
+})
+
+$("#addState").click(function() {
+
+})

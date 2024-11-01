@@ -753,6 +753,8 @@
 
     result.push("}");
 
+    console.log(result);
+
     return result.join("\n").replace(/\$/g, "$");
   };
 

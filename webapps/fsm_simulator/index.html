@@ -9,7 +9,7 @@
         content="FSM simulator is a Web application for step-by-step visual simulation of finite state machines which are defined with regular expressions." />
     <meta name="viewport" content="width=device-width" />
 
-    <title>FSM Simulator</title>
+    <title>FA Simulator</title>
 
     <link rel="stylesheet"
         href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-combined.min.css" />
@@ -27,19 +27,27 @@
         <div class="container controls">
             <div class="">
                 <div class="">
-                    <div class="container">
+                    <!-- <div class="container">
                         <h3> Create DFA </h3>
                         <p>
                             An easy way to create automata
                         </p>
-                        <button>Add State</button>
-                        <button>Add Transition</button>
-                        <button>Make Final State</button>
-                        <button>Make Initial State</button>
+                        <button class="btn" id="addState">Add State</button>
+                        <button class="btn" id="addTransition">Add Transition</button>
+                        <input type="text" placeholder="fromState">
+                        <input type="text" placeholder="alphabet"> 
+                        <input type="text" placeholder="toState">
+                        <button class="btn" id="addFinalState">Add Final State</button>
+                        <input type="text" placeholder="finalState">
+                        <button class="btn" id="changeInitialState">Make Initial State</button>
+                        <input type="text" placeholder="initial state">
+                        <button class="btn" id="resetAutomata">Reset Automata</button>
+                        <button class="btn" id="createmydfa">Create</button>
+                        <p>Info to be shown</p>
                         
-                    </div>
-
-                    <h3> Create NFA/DFA </h3>
+                    </div> -->
+                    
+                    <h3> Create NFA/DFA (scripting) </h3>
 
                     <ul class="nav nav-tabs">
                         <!-- <li id="regexinput" class="active"><a href="#tab1" data-toggle="tab">Input regex</a></li> -->
@@ -155,11 +163,11 @@
         <div class="container graph">
             <h3> Transition graph </h3>
 
-            <!-- <p>
+            <p>
                 The FSM being simulated is displayed in the form of a transition graph.
                 The nodes representing the current states of the FSM are colored in <span
                     class="currentState">&nbsp;&nbsp;&nbsp;</span>.
-            </p> -->
+            </p>
 
             <div id="automatonGraph"> </div>
         </div>
