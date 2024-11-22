@@ -54,6 +54,7 @@ function reorderCirclesInAcceptingStates(states) {
 }
 
 function drawGraph() {
+  console.log(automaton)
   var dotString = noam.fsm.printDotFormat(automaton);
   var gvizXml = Viz(dotString, { format: "svg", totalMemory: 100 * 1024 * 1024 });
   $("#automatonGraph").html(gvizXml);

@@ -1,0 +1,197 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="author" content="Ivan Zuzak, Vedrana Jankovic" />
+    <meta name="keywords"
+        content="fsm, finite-state machine, regex, regular expression, simulation, software, graphviz" />
+    <meta name="description"
+        content="FSM simulator is a Web application for step-by-step visual simulation of finite state machines which are defined with regular expressions." />
+    <meta name="viewport" content="width=device-width" />
+
+    <title>FA Simulator</title>
+
+    <link rel="stylesheet"
+        href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-combined.min.css" />
+    <link rel="stylesheet" href="styles/fsm_simulator.css" />
+</head>
+
+<body>
+    <div class="">
+        <div class="">
+            <h1>Finite Automata Simulator</h1>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="container controls">
+            <div>
+                <h3>Create DFA Easily</h3>
+                <p>
+                    Use the options below to define states, transitions, and other properties of your DFA.
+                </p>
+                <div class="create-dfa">
+                    <button class="btn" id="addState">Add State</button>
+                    <!-- <button class="btn" id="addAlphabet">Add Alphabet</button>
+                    <button class="btn" id="addTransition">Add Transition</button>
+                    <button class="btn" id="setAcceptingState">Set Accepting State</button>
+                    <button class="btn" id="setInitialState">Set Initial State</button> -->
+                    <button class="btn btn-danger" id="resetAutomaton">Reset Automaton</button>
+                    <button class="btn btn-success" id="finalizeAutomaton">Finalize DFA</button>
+                </div>
+        
+                <div class="form-group">
+                    <h5>Add Alphabet</h5>
+                    <input type="text" id="alphabetSymbol" class="input-small" placeholder="Symbol">
+                    <button class="btn btn-primary" id="addAlphabetBtn">Add</button>
+                </div>
+        
+                <div class="form-group">
+                    <h5>Add Transition</h5>
+                    <input type="text" id="fromState" class="input-small" placeholder="From State">
+                    <input type="text" id="symbol" class="input-small" placeholder="Symbol">
+                    <input type="text" id="toState" class="input-small" placeholder="To State">
+                    <button class="btn btn-primary" id="addTransitionBtn">Add</button>
+                </div>
+        
+                <div class="form-group">
+                    <h5>Set Accepting State</h5>
+                    <input type="text" id="acceptingState" class="input-small" placeholder="State">
+                    <button class="btn btn-primary" id="setAcceptingStateBtn">Set</button>
+                </div>
+        
+                <div class="form-group">
+                    <h5>Set Initial State</h5>
+                    <input type="text" id="initialState" class="input-small" placeholder="State">
+                    <button class="btn btn-primary" id="setInitialStateBtn">Set</button>
+                </div>
+        
+                <div>
+                    <h5>Current Automaton Configuration:</h5>
+                    <pre id="automatonConfig" class="well"></pre>
+                </div>
+            </div>
+            <hr />
+            <div class="container graph">
+                <h3> Automata </h3>
+    
+                <div id="automatonGraph"> </div>
+            </div>
+        </div>
+        
+        <script>
+            let automaton = {
+                states: [],
+                alphabet: [],
+                transitions: [],
+                acceptingStates: [],
+                initialState: null
+            };
+        
+            function updateAutomatonDisplay() {
+                document.getElementById('automatonConfig').textContent = JSON.stringify(automaton, null, 2);
+            }
+        
+            document.getElementById('addState').addEventListener('click', () => {
+                const state = `s${automaton.states.length}`;
+                automaton.states.push(state);
+                updateAutomatonDisplay();
+                alert(`State ${state} added.`);
+            });
+        
+            document.getElementById('addAlphabetBtn').addEventListener('click', () => {
+                const symbol = document.getElementById('alphabetSymbol').value.trim();
+                if (!symbol) {
+                    alert('Please enter a valid symbol.');
+                    return;
+                }
+                if (automaton.alphabet.includes(symbol)) {
+                    alert('Symbol already exists in the alphabet.');
+                    return;
+                }
+                automaton.alphabet.push(symbol);
+                updateAutomatonDisplay();
+                alert(`Alphabet symbol ${symbol} added.`);
+            });
+        
+            document.getElementById('addTransitionBtn').addEventListener('click', () => {
+                const fromState = document.getElementById('fromState').value;
+                const symbol = document.getElementById('symbol').value;
+                const toState = document.getElementById('toState').value;
+        
+                if (!fromState || !symbol || !toState) {
+                    alert('Please fill in all fields for the transition.');
+                    return;
+                }
+        
+                if (!automaton.states.includes(fromState) || !automaton.states.includes(toState)) {
+                    alert('Invalid state(s) specified.');
+                    return;
+                }
+        
+                if (!automaton.alphabet.includes(symbol)) {
+                    alert(`Symbol '${symbol}' is not part of the DFA alphabet.`);
+                    return;
+                }
+        
+                automaton.transitions.push({ fromState, symbol, toStates: [toState] });
+                updateAutomatonDisplay();
+                alert(`Transition ${fromState} --${symbol}--> ${toState} added.`);
+            });
+        
+            document.getElementById('setAcceptingStateBtn').addEventListener('click', () => {
+                const state = document.getElementById('acceptingState').value;
+                if (state && automaton.states.includes(state)) {
+                    if (!automaton.acceptingStates.includes(state)) {
+                        automaton.acceptingStates.push(state);
+                        updateAutomatonDisplay();
+                        alert(`State ${state} marked as accepting.`);
+                    } else {
+                        alert(`State ${state} is already an accepting state.`);
+                    }
+                } else {
+                    alert('Invalid state.');
+                }
+            });
+        
+            document.getElementById('setInitialStateBtn').addEventListener('click', () => {
+                const state = document.getElementById('initialState').value;
+                if (state && automaton.states.includes(state)) {
+                    automaton.initialState = state;
+                    updateAutomatonDisplay();
+                    alert(`State ${state} set as initial.`);
+                } else {
+                    alert('Invalid state.');
+                }
+            });
+        
+            document.getElementById('resetAutomaton').addEventListener('click', () => {
+                automaton = { states: [], alphabet: [], transitions: [], acceptingStates: [], initialState: null };
+                updateAutomatonDisplay();
+                alert('Automaton reset.');
+            });
+        
+            document.getElementById('finalizeAutomaton').addEventListener('click', () => {
+                if (!automaton.initialState || automaton.acceptingStates.length === 0) {
+                    alert('Please ensure the automaton has an initial state and at least one accepting state.');
+                    return;
+                }
+                alert('DFA finalized. Ready to simulate!');
+                var dotString = noam.fsm.printDotFormat(automaton);
+                console.log(dotString)
+                var gvizXml = Viz(dotString, { format: "svg", totalMemory: 100 * 1024 * 1024 });
+                $("#automatonGraph").html(gvizXml);
+                reorderCirclesInAcceptingStates(automaton.acceptingStates);
+                $("#automatonGraph svg").width($("#automatonGraph").width());
+            });
+        
+            updateAutomatonDisplay();
+        </script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+        <script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+        <script src="../assets/viz.js"></script>
+        <script src="../../lib/browser/noam.js"></script>
+        <script src="scripts/fsm_simulator.js"></script>
+        </body>
+
+</html>
