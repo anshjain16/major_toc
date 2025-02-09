@@ -54,10 +54,10 @@ function reorderCirclesInAcceptingStates(states) {
 }
 
 function drawGraph() {
-  console.log(automaton)
+  // console.log(automaton)
   var dotString = noam.fsm.printDotFormat(automaton);
   var gvizXml = Viz(dotString, { format: "svg", totalMemory: 100 * 1024 * 1024 });
-  $("#automatonGraph").html(gvizXml);
+  $("#automatonGraph").html(gvizXml);automatonGraph
   reorderCirclesInAcceptingStates(automaton.acceptingStates);
   $("#automatonGraph svg").width($("#automatonGraph").width());
 }
@@ -388,3 +388,4 @@ $("#createmydfa").click(function() {
 $("#addState").click(function() {
 
 })
+
