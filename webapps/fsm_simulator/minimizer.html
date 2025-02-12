@@ -7,7 +7,7 @@
 			name="author"
 			content="Divyansh Muley , Ansh Jain , Karina Rajawat , Sujata More , Kartik Baghel" />
 		<title>TOC LAB</title>
-		<title>NFA to DFA Converter</title>
+		<title>DFA Minimization</title>
 		<link
 			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
 			rel="stylesheet" />
@@ -58,10 +58,10 @@
 							>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" href="minimizer.html">Minimizer</a>
+							<a class="nav-link active" href="#">Minimizer</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link active" href="nfa2dfa.html">NFA to DFA</a>
+							<a class="nav-link" href="nfa2dfa.html">NFA to DFA</a>
 						</li>
 						<li class="nav-item">
 							<a class="nav-link" href="fsm2regex.html">FSM to RE</a>
@@ -73,23 +73,23 @@
 
 		<!-- Main Container -->
 		<div class="container my-4">
-			<h1 class="mb-4">NFA to DFA Converter</h1>
+			<h1 class="mb-4">DFA Minimizer</h1>
 
 			<!-- Controls Card -->
 			<div class="card mb-4">
 				<div class="card-body">
-					<div class="mb-3 d-flex flex-wrap gap-2">
-						<button id="generateNFA" class="btn btn-primary">
-							Generate Random NFA
+					<div class="d-flex flex-wrap gap-2 mb-3">
+						<button id="generateDFA" class="btn btn-primary">
+							Generate Random DFA
 						</button>
-						<button id="convertToDFA" class="btn btn-success">
-							Convert to DFA
+						<button id="minimizeDFA" class="btn btn-success">
+							Minimize DFA
 						</button>
 					</div>
 
-					<!-- Manual NFA Creation Section -->
+					<!-- Manual DFA Creation Section -->
 					<div class="manual-creation mb-3">
-						<h3>Manual NFA Creation</h3>
+						<h3>Manual DFA Creation</h3>
 						<div class="state-creation p-3 border rounded mb-3">
 							<h4>Add State</h4>
 							<input
@@ -125,7 +125,7 @@
 								type="text"
 								id="transitionSymbol"
 								class="form-control mb-2"
-								placeholder="Symbol (ε for epsilon)" />
+								placeholder="Symbol" />
 							<select id="toState" class="form-select mb-2"></select>
 							<button id="addTransition" class="btn btn-outline-primary">
 								Add Transition
@@ -137,49 +137,50 @@
 							<h4 class="mt-3">Current Transitions</h4>
 							<ul id="transitionList" class="list-group"></ul>
 						</div>
-						<button id="generateManualNFA" class="btn btn-info">
-							Generate NFA from Manual Input
+						<button id="generateManualDFA" class="btn btn-info">
+							Generate DFA from Manual Input
 						</button>
 					</div>
 
-					<!-- NFA Definition and Create Automaton -->
+					<!-- Textarea for DFA Definition -->
 					<div class="mb-3">
 						<textarea
 							id="fsm"
 							class="form-control"
 							rows="5"
-							placeholder="Paste NFA definition here"></textarea>
+							placeholder="Paste DFA definition here"></textarea>
 					</div>
 					<button id="createAutomaton" class="btn btn-secondary">
-						Create Automaton
+						Visualize DFA
 					</button>
 				</div>
 			</div>
 
-			<!-- Visualization Section -->
+			<!-- Graphs Section -->
 			<div class="row">
 				<div class="col-md-6 mb-4">
 					<div class="card">
 						<div class="card-header">
-							<h3>NFA Visualization</h3>
+							<h3>Original DFA</h3>
 						</div>
 						<div class="card-body">
-							<div id="nfaGraph"></div>
+							<div id="originalGraph"></div>
 						</div>
 					</div>
 				</div>
 				<div class="col-md-6 mb-4">
 					<div class="card">
 						<div class="card-header">
-							<h3>DFA Visualization</h3>
+							<h3>Minimized DFA</h3>
 						</div>
 						<div class="card-body">
-							<div id="dfaGraph"></div>
+							<div id="minimizedGraph"></div>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
+
 		<footer class="bg-dark text-white py-4">
 			<div class="container text-center">
 				<p class="mb-1">&copy; 2025 TOC Lab. All Rights Reserved.</p>
@@ -195,10 +196,9 @@
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 		<script src="../assets/viz.js"></script>
 		<script src="../../lib/browser/noam.js"></script>
-
 		<script>
-			let nfa = null;
-			let dfa = null;
+			let originalDFA = null;
+			let minimizedDFA = null;
 			let manualStates = [];
 			let manualTransitions = [];
 
@@ -258,62 +258,71 @@
 			$("#addTransition").click(function () {
 				const fromState = $("#fromState").val();
 				const toState = $("#toState").val();
-				let symbol = $("#transitionSymbol").val().trim();
-				if (symbol === "ε") symbol = "";
-				if (!fromState || !toState || symbol === "") {
+				const symbol = $("#transitionSymbol").val().trim();
+
+				if (!fromState || !toState || !symbol) {
 					alert("Please fill in all fields for the transition");
 					return;
 				}
+				if (
+					manualTransitions.some(
+						(t) => t.from === fromState && t.symbol === symbol
+					)
+				) {
+					alert("Transition for this symbol already exists from this state");
+					return;
+				}
+
 				manualTransitions.push({from: fromState, symbol: symbol, to: toState});
 				$("#transitionSymbol").val("");
 
 				const transitionList = $("#transitionList");
 				transitionList.empty();
 				manualTransitions.forEach((trans) => {
-					const displaySymbol = trans.symbol === "" ? "ε" : trans.symbol;
 					const li = $("<li></li>").text(
-						`${trans.from} --${displaySymbol}--> ${trans.to}`
+						`${trans.from} --${trans.symbol}--> ${trans.to}`
 					);
 					transitionList.append(li);
 				});
 			});
 
-			$("#generateManualNFA").click(function () {
+			$("#generateManualDFA").click(function () {
 				const initialStates = manualStates.filter((s) => s.isInitial);
 				if (initialStates.length !== 1) {
-					alert("There must be exactly one initial state");
+					alert("DFA must have exactly one initial state");
 					return;
 				}
+
+				// Check for complete transitions
+				const alphabet = [...new Set(manualTransitions.map((t) => t.symbol))];
+				manualStates.forEach((state) => {
+					alphabet.forEach((symbol) => {
+						if (
+							!manualTransitions.some(
+								(t) => t.from === state.name && t.symbol === symbol
+							)
+						) {
+							alert(
+								`Missing transition for symbol '${symbol}' from state '${state.name}'`
+							);
+							return;
+						}
+					});
+				});
 
 				const states = manualStates.map((s) => s.name);
 				const acceptingStates = manualStates
 					.filter((s) => s.isAccepting)
 					.map((s) => s.name);
 				const initialState = initialStates[0].name;
-				const alphabet = [
-					...new Set(manualTransitions.map((t) => t.symbol)),
-				].filter((s) => s !== "");
 
-				const transitions = [];
-				const transitionMap = new Map();
-				manualTransitions.forEach((trans) => {
-					const key = `${trans.from},${trans.symbol}`;
-					if (!transitionMap.has(key)) {
-						transitionMap.set(key, []);
-					}
-					transitionMap.get(key).push(trans.to);
-				});
+				const transitions = manualTransitions.map((t) => ({
+					fromState: t.from,
+					symbol: t.symbol,
+					toStates: [t.to],
+				}));
 
-				transitionMap.forEach((toStates, key) => {
-					const [from, symbol] = key.split(",");
-					transitions.push({
-						fromState: from,
-						symbol: symbol,
-						toStates: toStates,
-					});
-				});
-
-				const nfaObj = {
+				const dfaObj = {
 					states: states,
 					alphabet: alphabet,
 					transitions: transitions,
@@ -321,52 +330,63 @@
 					acceptingStates: acceptingStates,
 				};
 
-				const serialized = noam.fsm.serializeFsmToString(nfaObj);
+				// if (!noam.fsm.isDeterministic(dfaObj)) {
+				//     alert('Created automaton is not a valid DFA');
+				//     return;
+				// }
+
+				const serialized = noam.fsm.serializeFsmToString(dfaObj);
 				$("#fsm").val(serialized);
 				$("#createAutomaton").click();
 			});
 
-			// Original functionality remains unchanged below
+			// Original functionality
 			$("#createAutomaton").click(function () {
 				try {
-					nfa = noam.fsm.parseFsmFromString($("#fsm").val());
-					drawNFA();
-					$("#convertToDFA").attr("disabled", false);
+					originalDFA = noam.fsm.parseFsmFromString($("#fsm").val());
+					// if (!noam.fsm.isDeterministic(originalDFA)) {
+					//     throw new Error("Automaton is not a DFA");
+					// }
+					drawOriginalDFA();
+					$("#minimizeDFA").attr("disabled", false);
 				} catch (e) {
-					alert("Error parsing NFA: " + e.message);
+					alert("Error: " + e.message);
 				}
 			});
 
-			$("#generateNFA").click(function () {
-				nfa = noam.fsm.createRandomFsm(noam.fsm.enfaType, 4, 2, 2);
-				$("#fsm").val(noam.fsm.serializeFsmToString(nfa));
-				drawNFA();
-				$("#convertToDFA").attr("disabled", false);
+			$("#generateDFA").click(function () {
+				originalDFA = noam.fsm.createRandomFsm(noam.fsm.dfaType, 6, 2, 3);
+				$("#fsm").val(noam.fsm.serializeFsmToString(originalDFA));
+				drawOriginalDFA();
+				$("#minimizeDFA").attr("disabled", false);
 			});
 
-			$("#convertToDFA").click(function () {
-				if (!nfa) {
-					alert("Please create an NFA first!");
+			$("#minimizeDFA").click(function () {
+				if (!originalDFA) {
+					alert("Please create a DFA first!");
 					return;
 				}
 
-				const nfaWithoutEpsilon = noam.fsm.convertEnfaToNfa(nfa);
-				dfa = noam.fsm.convertNfaToDfa(nfaWithoutEpsilon);
-				dfa = noam.fsm.minimize(dfa);
-
-				drawDFA();
+				try {
+					minimizedDFA = noam.fsm.minimize(originalDFA);
+					drawMinimizedDFA();
+				} catch (e) {
+					alert("Minimization failed: " + e.message);
+				}
 			});
 
-			function drawNFA() {
-				const dotString = noam.fsm.printDotFormat(nfa);
+			function drawOriginalDFA() {
+				const dotString = noam.fsm.printDotFormat(originalDFA);
 				const svg = Viz(dotString, {format: "svg"});
-				$("#nfaGraph").html(svg);
+				$("#originalGraph").html(svg);
+				$("#originalGraph svg").width($("#originalGraph").width());
 			}
 
-			function drawDFA() {
-				const dotString = noam.fsm.printDotFormat(dfa);
+			function drawMinimizedDFA() {
+				const dotString = noam.fsm.printDotFormat(minimizedDFA);
 				const svg = Viz(dotString, {format: "svg"});
-				$("#dfaGraph").html(svg);
+				$("#minimizedGraph").html(svg);
+				$("#minimizedGraph svg").width($("#minimizedGraph").width());
 			}
 		</script>
 	</body>
