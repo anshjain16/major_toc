@@ -44,60 +44,6 @@
         }
       }
 
-      /*
-        Simplifies the regular expression @a tree (a noam.re.tree object).
-        The goal of simplification is to obtain a regular expression which
-        defines the same language but has a smaller number of elements in
-        the tree structure and therefore less elements in array or string
-        form. Simplification is performed by iteratively transforming the
-        tree using a set of known algebraic equivalences in Kleene algebra.
-        If specified, the @a numIterations integer limits the number of
-        transformations that will be performed. Furthermore, if specified,
-        the @a appliedPatterns array will be filled with objects that
-        describe which patterns were applied, i.e. which transformations
-        were performed. The original tree @a tree is not modified; a new
-        tree is returned as a result.
-
-        The current set of patterns that are checked are (small alphabet
-        letters represent any regular expression):
-
-          # (a) => a (sequence of 1 element)
-          # (a) => a (choices with 1 element)
-          # $* => $
-          # (a*)* => a*
-          # (a+b*)* => (a+b)*
-          # $+a* => a*
-          # (a*b*c*)* => (a*+b*+c*)*
-          # $a => a
-          # (a+(b+c)) => a+b+c
-          # ab(cd) => abcd
-          # a+b+a => b+a
-          # a+b+a* => b+a*
-          # a*a* => a*
-          # (aa+a)* => a*
-          # (a+$)* => a*
-          # (ab+ac) => a(b+c)
-          # a*aa* => aa*
-          # (ab+cb) => (a+c)b
-          # a*($+b(a+b)*) => (a+b)*
-          # ($+(a+b)*a)b* => (a+b)*
-          # (a()) => ()
-          # ()* => ()
-
-        If none of these "simple" patterns can be applied, the simplification
-        process tries to apply patterns based on language subset (via
-        transformations to fsms):
-
-          # L1+L2 => L2, if L1 is subset of L2
-          # (L1+L2)* => L2, if L1* is subset of L2*
-          # L1*L2* => L2, if L1* is subset of L2*
-          # $+L => L, if L contains $
-          # (L1+$)(L2)* => (L2)* if L1 is subset of L2
-
-        The tree transformation process is stopped after no transformation
-        can be applied to the tree.
-      */
-
       var _regex_simplification_patterns = [];
 
       // (a) => a (sequence)
@@ -878,7 +824,8 @@
       }
 
       // The choices parameter must be an array of expression trees.
-      // Returns the root of a new tree that represents the expression that is the union of
+      // Returns the root of a new tree that represents
+      //  the expression that is the union of
       // all the choices.
       function makeAlt(choices) {
         return {
@@ -888,7 +835,8 @@
       }
 
       // The elements parameter must be an array of expression trees.
-      // Returns the root of a new tree that represents the expression that is the sequence
+      // Returns the root of a new tree that represents
+      //  the expression that is the sequence
       // of all the elements.
       function makeSeq(elements) {
         return {
@@ -897,7 +845,7 @@
         };
       }
 
-      // Wraps the given expressin tree unde a Kleene star operator.
+      // Wraps the given expressin tree under a Kleene star operator.
       // Returns the root of the new tree.
       function makeKStar(expr) {
         return {
@@ -955,13 +903,6 @@
       }
 
       function _KStarToAutomaton(regex, automaton, stateCounter) {
-        // The $ sign in the following drawing represents an epsilon transition.
-        //
-        //    ----------------$>----------------
-        //   /                                  \
-        // |l|-$>-|ll|...(regex.expr)...|rr|-$>-|r|
-        //          \_________<$_________/
-        //
         var l = noam.fsm.addState(automaton, stateCounter.getAndAdvance());
         var r = noam.fsm.addState(automaton, stateCounter.getAndAdvance());
         var inner = _dispatchToAutomaton(regex.expr, automaton, stateCounter);
@@ -976,7 +917,8 @@
       }
 
       function _litToAutomaton(regex, automaton, stateCounter) {
-        // Generate the "left" and "right" states and connect them with the appropriate
+        // Generate the "left" and "right" states 
+        // and connect them with the appropriate
         // transition symbol.
         var l = noam.fsm.addState(automaton, stateCounter.getAndAdvance());
         var r = noam.fsm.addState(automaton, stateCounter.getAndAdvance());
@@ -1006,11 +948,6 @@
       _toAutomatonFuns[tags.LIT] = _litToAutomaton;
       _toAutomatonFuns[tags.EPS] = _epsToAutomaton;
 
-      // Calls the appropriate *ToAutomaton function to handle the various kinds of regular expressions.
-      // @a stateCounter holds the number of the next state to be added to the automaton.
-      // Every *ToAutomaton function modifies @a automaton and returns a pair of states (as a two element array).
-      // The first state is the start state and the second state is the accepting state of the part of the
-      // automaton that accepts the language defined by @a regex.
       function _dispatchToAutomaton(regex, automaton, stateCounter) {
         return _toAutomatonFuns[regex.tag](regex, automaton, stateCounter);
       }
@@ -1101,42 +1038,16 @@
         return _toArrayFuns[regex.tag](regex, arr);
       }
 
-      // Returns the array representation (i.e. noam.re.array) of @a regex which must
-      // be in the tree (i.e. noam.re.tree) representation.
-      // Parentheses are inserted into the array to preserve the meaning of the
-      // regex. However, this does not really lead to minimal parenthesization because
-      // it doesn't consider any rewriting rules. More specifically, if there were
-      // parentheses that modify associativity of alteration or sequencing in the
-      // original regex that was parsed into this tree, they will be preserved
-      // even though they are not necessary.
       function toArray(regex) {
         var arr = [];
         _dispatchToArray(regex, arr);
         return arr;
       }
-
-      // Returns the string representation of @a regex which must be in the tree
-      // (i.e. noam.re.tree) representation. This is not always possible, so
-      // this function throws when the regex contains some symbols which are not
-      // single-character strings.
-      //
-      // Semantically equivalent to first calling toArray and then calling
-      // noam.re.array.toString on the result.
       function toString(regex) {
         return noam.re.array.toString(toArray(regex));
       }
 
-      // Returns a random regex containing at most @a numSymbols symbols from the
-      // specified array of possible symbols @a alphabet. The probability distribution
-      // of symbol selection is uniform and can be skewed by repeating elements in
-      // alphabet. The parameter @a cfg is optional and can contain the following
-      // fields:
-      //   ALT_PROB    - the probability that alteration is used between two subexpressions
-      //                 instead of sequencing (default 0.5)
-      //   KLEENE_PROB - the probability that any subexpression is put under the Kleene
-      //                 star operator (default 0.1)
-      //   EPS_PROB    - the probability that epsilon is added as an alteration choice
-      //                 (default 0.1)
+      
       function random(numSymbols, alphabet, cfg) {
         var altp = 0.5;
         var kleenep = 0.1;
@@ -1202,20 +1113,9 @@
       };
     })();
 
-    /*
-     * A linear representation of regular expressions.
-     * Every symbol can be an arbitrary object.
-     *
-     * Regular expression operators, parentheses and epsilon must be represented using
-     * the array.specials constants.
-     *
-     * Concatenation is implicit when there are no operators between two subexpressions.
-     * The default operator precedence is Kleene star > concatenation > alteration, and
-     * can be modified using parentheses.
-     */
+
     var array = (function() {
-      // This is based on object identity, i.e. each of these constants will be different
-      // from any other object that can be inserted into the regex array.
+
       var specials = {
         ALT: {},
         KSTAR: {},
@@ -1223,23 +1123,13 @@
         RIGHT_PAREN: {},
         EPS: {}
       };
-
-      // give objects their usual string representation
       specials.ALT.toString = function() { return "+"; };
       specials.KSTAR.toString = function() { return "*"; };
       specials.LEFT_PAREN.toString = function() { return "("; };
       specials.RIGHT_PAREN.toString = function() { return ")"; };
       specials.EPS.toString = function() { return "$"; };
 
-      /* Custom Error constructor for regular expression errors.
-       *
-       * Every RegexError object has the following properties:
-       *  - name: the string "RegexError"
-       *  - message: a string description of the error
-       *  - position: a number specifying the 0-based index of the position where the error
-       *              was found (note that this might not be where the error actually is, i.e.
-       *              this number is a hint rather than a definite answer)
-       */
+  
       function RegexError(message, position) {
         this.name = "RegexError";
         this.message = message;
@@ -1249,11 +1139,6 @@
       // We do this to get the stack trace when RegexError objects are thrown.
       RegexError.prototype = new Error();
 
-      // The next three functions are used to make a convenient array wrapper
-      // used in the parsing code.
-      //
-      // This peek method relies on the fact that accessing "out of bounds"
-      // will return undefined.
       function _peek() {
         return this.arr[this.idx];
       }
@@ -1299,10 +1184,6 @@
         }
       }
 
-      // If @a chr is one of the escapable characters
-      // in the string representation (i.e. element of noam.re.string.escapable),
-      // returns it prefixed by a backslash (i.e. escaped).
-      // Otherwise returns chr unchanged.
       function _escape(chr) {
         var escapable = noam.re.string.escapable;
         for (var i=0; i<escapable.length; i++) {
@@ -1314,7 +1195,6 @@
       }
 
       // Returns the string representation of the regex given by @a arr.
-      //
       // Throws if the regex contains any symbols which are not one-character strings
       // and special symbols from noam.re.array.specials.
       function toString(arr) {
@@ -1345,7 +1225,6 @@
       }
 
       // Returns the automaton accepting the language represented by the regex @a arr.
-      //
       // Semantically equivalent to first calling toTree on @a arr and then converting
       // the result to an automaton via noam.re.tree.toAutomaton.
       function toAutomaton(arr) {
@@ -1353,7 +1232,6 @@
         return noam.re.tree.toAutomaton(tree);
       }
 
-      // <expr> ::= <concat> ("|" <concat>)*
       function _parseExpr(input) {
         var concats = [];
         while (true) {
@@ -1368,7 +1246,6 @@
         return noam.re.tree.makeAlt(concats);
       }
 
-      // <concat> ::= <katom>+
       function _parseConcat(input) {
         var katoms = [];
         var katom;
@@ -1387,7 +1264,6 @@
         return noam.re.tree.makeSeq(katoms);
       }
 
-      // <katom> ::= <atom> ("*" | eps)
       function _parseKatom(input) {
         var atom = _parseAtom(input);
         if (input.peek() === specials.KSTAR) {
@@ -1397,7 +1273,6 @@
         return atom;
       }
 
-      // <atom> ::= "(" <expr> ")" | eps | symbol
       function _parseAtom(input) {
         if (input.peek() === specials.LEFT_PAREN) {
           input.advance(); // skip the left parenthesis
@@ -1449,29 +1324,11 @@
     })();
 
 
-    /*
-     * A string representation of regular expressions.
-     *
-     * The alphabet is limited to string characters, i.e. every character in the string is an input
-     * symbol in the language except:
-     *    - the dollar symbol ($) which is used as epsilon, i.e. the empty string
-     *    - the plus character (+) which is used as the alteration operator
-     *    - the star character (*) which is used as the Kleene star
-     *    - parentheses which are used for grouping
-     *    - the backslash character (\) which is used for escaping the special meaning of all
-     *      the listed characters, including backslash itself; for example, the regex
-     *      "(a+b)*\\+" represents the language of all strings of as and bs ending in one
-     *      plus character (notice that due to the fact that backslash also escapes in
-     *      JavaScript strings, we need two backslashes to get the two-character
-     *      sequence \+ that we want)
-     */
+  
     var string = (function() {
 
       var escapable = "$+*()\\";
 
-      // Returns the array representation of the regex represented by @a str.
-      //
-      // Throws an Error if @a str contains illegal escape sequences.
       function toArray(str) {
         var arr = [];
         var escaped = false;
@@ -1505,22 +1362,11 @@
         return arr;
       }
 
-      // Returns the tree representation of the regex represented by @a str.
-      //
-      // Semantically equivalent to first converting the @a str to the array
-      // representation via noam.re.string.toArray and then converting the
-      // result to a tree via noam.re.array.toTree.
       function toTree(str) {
         var arr = noam.re.string.toArray(str);
         return noam.re.array.toTree(arr);
       }
 
-      // Returns an FSM accepting the language of the regex represented by @a str.
-      //
-      // Semantically equivalent to first converting the @a str to the array
-      // representation via noam.re.string.toArray, then converting the
-      // result to a tree via noam.re.array.toTree and finally converting the result
-      // of that to an automaton via noam.re.tree.toAutomaton.
       function toAutomaton(str) {
         var tree = noam.re.string.toTree(str);
         return noam.re.tree.toAutomaton(tree);

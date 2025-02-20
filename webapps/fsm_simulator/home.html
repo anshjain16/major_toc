@@ -13,28 +13,31 @@
 		<link rel="stylesheet" href="styles/home.css" />
 	</head>
 	<body>
-		<nav class="navbar navbar-expand-lg navbar-dark bg-success">
-			<div class="container-fluid">
-				<a class="navbar-brand" href="home.html">TOC Lab</a>
+		<nav class="custom-navbar navbar navbar-expand-lg">
+			<div class="container">
+				<a class="navbar-brand" href="home.html">
+					<span class="brand-icon">⚡</span> TOC Lab
+				</a>
 				<button
 					class="navbar-toggler"
 					type="button"
 					data-bs-toggle="collapse"
-					data-bs-target="#navbarNav"
-					aria-controls="navbarNav"
-					aria-expanded="false"
-					aria-label="Toggle navigation">
-					<span class="navbar-toggler-icon"></span>
+					data-bs-target="#navbarNav">
+					<span class="toggler-icon">
+						<span></span>
+						<span></span>
+						<span></span>
+					</span>
 				</button>
 				<div class="collapse navbar-collapse" id="navbarNav">
 					<ul class="navbar-nav ms-auto">
 						<li class="nav-item">
-							<a class="nav-link active" aria-current="page" href="home.html"
-								>Home</a
-							>
+							<a class="nav-link active" href="home.html">Home</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" href="fsm-simulator.html">Simulator</a>
+							<a class="nav-link" href="fsm-simulator.html"
+								>Finite State Machine Simulator</a
+							>
 						</li>
 						<li class="nav-item">
 							<a class="nav-link" href="custom-automata-creator.html"
@@ -42,7 +45,7 @@
 							>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" href="minimizer.html">Minimizer</a>
+							<a class="nav-link" href="minimizer.html">DFA Minimizer</a>
 						</li>
 						<li class="nav-item">
 							<a class="nav-link" href="nfa2dfa.html">NFA to DFA</a>
@@ -189,17 +192,65 @@
 			</div>
 		</section>
 
-		<footer class="bg-dark text-white py-4">
-			<div class="container text-center">
-				<p class="mb-1">&copy; 2025 TOC Lab. All Rights Reserved.</p>
-				<p class="mb-0">
-					Designed and Developed by Divyansh Muley, Ansh Jain, Karina Rajawat,
-					Sujata More, Kartik Baghel
-				</p>
+		<footer class="custom-footer">
+			<div class="footer-top">
+				<div class="container">
+					<div class="row gy-4">
+						<div class="col-lg-4">
+							<h3 class="footer-brand">TOC Lab</h3>
+							<p class="footer-text">
+								Exploring the world of theoretical computer science through
+								interactive tools and visualizations.
+							</p>
+							<div class="social-links">
+								<a href="#"><i class="fab fa-github"></i></a>
+								<a href="#"><i class="fab fa-linkedin"></i></a>
+								<a href="#"><i class="fab fa-twitter"></i></a>
+							</div>
+						</div>
+						<div class="col-lg-4">
+							<h4>Quick Links</h4>
+							<ul class="footer-links">
+								<li><a href="home.html">Home</a></li>
+								<li>
+									<a href="fsm-simulator.html"
+										>Finite State Machine Simulator</a
+									>
+								</li>
+								<li>
+									<a href="custom-automata-creator.html"
+										>Custom Automata Creator</a
+									>
+								</li>
+								<li><a href="minimizer.html">DFA Minimizer</a></li>
+								<li><a href="nfa2dfa.html">NFA to DFA Converter</a></li>
+								<li><a href="fsm2regex.html">FSM to Regular Expression</a></li>
+							</ul>
+						</div>
+						<div class="col-lg-4">
+							<h4>Contact Info</h4>
+							<ul class="footer-contact">
+								<li>SGSITS Indore , M.P , India</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="footer-bottom">
+				<div class="container">
+					<div class="row">
+						<div class="col-md-12 text-center">
+							<p class="mb-0">&copy; 2025 TOC Lab. All Rights Reserved.</p>
+							<p class="credits">
+								Designed and Developed by Divyansh Muley, Ansh Jain, Karina
+								Rajawat, Sujata More, Kartik Baghel
+							</p>
+						</div>
+					</div>
+				</div>
 			</div>
 		</footer>
 
-		<!-- Bootstrap 5 JS Bundle -->
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 	</body>
 </html>
