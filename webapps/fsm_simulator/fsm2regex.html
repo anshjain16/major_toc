@@ -1,269 +1,404 @@
+<!DOCTYPE html>
 <html>
-<head>
-    <meta charset="utf-8" />
-    <meta name="author" content="Ivan Zuzak, Vedrana Jankovic" />
-    <meta name="keywords" content="fsm, finite-state machine, regex, regular expression, convert, transform, software, graphviz" />
-    <meta name="description" content="Fsm2Regex is a Web application for transforming finite state machines to regular expressions and regexes to FSMs." />
-    <meta name="viewport" content="width=device-width" />
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta
+			name="author"
+			content="Divyansh Muley , Ansh Jain , Karina Rajawat , Sujata More , Kartik Baghel" />
+		<title>TOC LAB</title>
+		<title>FSM to regular expression</title>
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+			rel="stylesheet" />
+		<link rel="stylesheet" href="styles/fsm2regex.css" />
+		<style>
+			.manual-creation div {
+				margin-bottom: 10px;
+			}
+			.state-creation,
+			.transition-creation {
+				border: 1px solid #ccc;
+				padding: 10px;
+				margin: 10px 0;
+			}
+			.current-data ul {
+				list-style-type: none;
+				padding-left: 0;
+			}
+			.automaton-type-selector {
+				margin: 10px 0;
+			}
+		</style>
+	</head>
+	<body>
+		<nav class="custom-navbar navbar navbar-expand-lg">
+			<div class="container">
+				<a class="navbar-brand" href="home.html">
+					<span class="brand-icon">⚡</span> TOC Lab
+				</a>
+				<button
+					class="navbar-toggler"
+					type="button"
+					data-bs-toggle="collapse"
+					data-bs-target="#navbarNav">
+					<span class="toggler-icon">
+						<span></span>
+						<span></span>
+						<span></span>
+					</span>
+				</button>
+				<div class="collapse navbar-collapse" id="navbarNav">
+					<ul class="navbar-nav ms-auto">
+						<li class="nav-item">
+							<a class="nav-link" href="home.html">Home</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="fsm-simulator.html"
+								>Finite State Machine Simulator</a
+							>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="custom-automata-creator.html"
+								>Automata Creator</a
+							>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="minimizer.html">DFA Minimizer</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="nfa2dfa.html">NFA to DFA</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link active" href="fsm2regex.html">FSM to RE</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+		<header class="py-4 mb-4">
+			<div class="container">
+				<h1 class="display-4">FSM to Regular Expression</h1>
+			</div>
+		</header>
+		<div class="container mb-4">
+			<div class="row">
+				<div class="col-md-6">
+					<h3>Create Automaton</h3>
+					<div class="card mb-4">
+						<div class="card-body">
+							<div class="manual-creation">
+								<h4>Manual FSM Creation</h4>
+								<div class="automaton-type-selector mb-3">
+									<div class="form-check form-check-inline">
+										<input
+											class="form-check-input"
+											type="radio"
+											name="automatonType"
+											value="dfa"
+											checked />
+										<label class="form-check-label">DFA</label>
+									</div>
+									<div class="form-check form-check-inline">
+										<input
+											class="form-check-input"
+											type="radio"
+											name="automatonType"
+											value="nfa" />
+										<label class="form-check-label">NFA</label>
+									</div>
+								</div>
 
-    <title>FSM to regular expression</title>
+								<div class="state-creation mb-3 p-3 border rounded">
+									<h5>Add State</h5>
+									<input
+										type="text"
+										id="stateName"
+										class="form-control"
+										placeholder="State name" />
+									<div class="form-check form-check-inline mt-2">
+										<input
+											type="radio"
+											class="form-check-input"
+											name="initialState"
+											id="isInitial" />
+										<label class="form-check-label" for="isInitial"
+											>Initial</label
+										>
+									</div>
+									<div class="form-check form-check-inline">
+										<input
+											type="checkbox"
+											class="form-check-input"
+											id="isAccepting" />
+										<label class="form-check-label" for="isAccepting"
+											>Accepting</label
+										>
+									</div>
+									<button id="addState" class="btn btn-sm btn-primary mt-2">
+										Add State
+									</button>
+								</div>
 
-    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-combined.min.css" />
-    <link rel="stylesheet" href="styles/fsm2regex.css" />
-    <style>
-        .manual-creation div {
-            margin-bottom: 10px;
-        }
-        .state-creation, .transition-creation {
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin: 10px 0;
-        }
-        .current-data ul {
-            list-style-type: none;
-            padding-left: 0;
-        }
-        .automaton-type-selector {
-            margin: 10px 0;
-        }
-    </style>
-</head>
+								<div class="transition-creation mb-3 p-3 border rounded">
+									<h5>Add Transition</h5>
+									<select id="fromState" class="form-select mb-2"></select>
+									<input
+										type="text"
+										id="transitionSymbol"
+										class="form-control mb-2"
+										placeholder="Symbol (ε for epsilon)" />
+									<select id="toState" class="form-select mb-2"></select>
+									<button id="addTransition" class="btn btn-sm btn-primary">
+										Add Transition
+									</button>
+								</div>
 
-<body>
-    <div class="header">
-        <div class="container">
-            <h1>FSM to regular expression</h1>
-        </div>
-    </div>
+								<div class="current-data mb-3">
+									<h5>Current States</h5>
+									<ul id="stateList" class="list-group"></ul>
+									<h5 class="mt-3">Current Transitions</h5>
+									<ul id="transitionList" class="list-group"></ul>
+								</div>
+								<button id="generateManualFSM" class="btn btn-info">
+									Generate FSM from Manual Input
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<h3>Input Regex</h3>
+					<div class="mb-3">
+						<button id="generateRegex" class="btn btn-primary">
+							Generate Random Regex
+						</button>
+					</div>
+					<div class="mb-3">
+						<input
+							id="regex"
+							type="text"
+							class="form-control"
+							placeholder="Or write your own regex"
+							spellcheck="false" />
+					</div>
+					<h3>Input Automaton</h3>
+					<div class="mb-3">
+						<button id="generateDFA" class="btn btn-primary">
+							Generate Random DFA
+						</button>
+						<button id="generateNFA" class="btn btn-secondary">
+							Generate Random NFA
+						</button>
+					</div>
+					<div class="mb-3">
+						<textarea
+							id="fsm"
+							class="form-control"
+							rows="19"
+							placeholder="Or paste FSM definition here"
+							spellcheck="false"></textarea>
+					</div>
+				</div>
+			</div>
 
-    <div class="content">
-        <div class="container controls">
-            <h3>Create automaton</h3>
+			<p id="inputError" class="text-danger"></p>
+			<hr />
+		</div>
 
-            <div class="row-fluid">
-                <div class="span6 column">
-                    <div class="manual-creation">
-                        <h4>Manual FSM Creation</h4>
-                        <div class="automaton-type-selector">
-                            <label class="radio inline">
-                                <input type="radio" name="automatonType" value="dfa" checked> DFA
-                            </label>
-                            <label class="radio inline">
-                                <input type="radio" name="automatonType" value="nfa"> NFA
-                            </label>
-                        </div>
+		<!-- Graph Section -->
+		<div class="container mb-4">
+			<div class="card">
+				<div class="card-header">
+					<h3>Transition Graph</h3>
+				</div>
+				<div class="card-body">
+					<div id="automatonGraph"></div>
+				</div>
+			</div>
+		</div>
+		<footer class="bg-dark text-white py-4">
+			<div class="container text-center">
+				<p class="mb-1">&copy; 2025 TOC Lab. All Rights Reserved.</p>
+				<p class="mb-0">
+					Designed and Developed by Divyansh Muley, Ansh Jain, Karina Rajawat,
+					Sujata More, Kartik Baghel
+				</p>
+			</div>
+		</footer>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/1.2.1/lodash.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+		<script src="../assets/viz.js"></script>
+		<script src="../../lib/browser/noam.js"></script>
+		<script src="scripts/fsm2regex.js"></script>
+		<script>
+			let manualStates = [];
+			let manualTransitions = [];
 
-                        <div class="state-creation">
-                            <h5>Add State</h5>
-                            <input type="text" id="stateName" placeholder="State name" />
-                            <label><input type="radio" name="initialState" id="isInitial" /> Initial</label>
-                            <label><input type="checkbox" id="isAccepting" /> Accepting</label>
-                            <button id="addState" class="btn btn-small">Add State</button>
-                        </div>
+			function updateStateDropdowns() {
+				const fromState = $("#fromState");
+				const toState = $("#toState");
+				fromState.empty();
+				toState.empty();
+				manualStates.forEach((state) => {
+					fromState.append(
+						$("<option></option>").text(state.name).attr("value", state.name)
+					);
+					toState.append(
+						$("<option></option>").text(state.name).attr("value", state.name)
+					);
+				});
+			}
 
-                        <div class="transition-creation">
-                            <h5>Add Transition</h5>
-                            <select id="fromState"></select>
-                            <input type="text" id="transitionSymbol" placeholder="Symbol (ε for epsilon)" />
-                            <select id="toState"></select>
-                            <button id="addTransition" class="btn btn-small">Add Transition</button>
-                        </div>
+			$("#addState").click(function () {
+				const name = $("#stateName").val().trim();
+				if (!name) {
+					alert("State name cannot be empty");
+					return;
+				}
+				if (manualStates.some((s) => s.name === name)) {
+					alert("State name must be unique");
+					return;
+				}
+				const isInitial = $("#isInitial").is(":checked");
+				if (isInitial) {
+					manualStates.forEach((s) => (s.isInitial = false));
+				}
+				const isAccepting = $("#isAccepting").is(":checked");
+				manualStates.push({
+					name: name,
+					isInitial: isInitial,
+					isAccepting: isAccepting,
+				});
 
-                        <div class="current-data">
-                            <h5>Current States</h5>
-                            <ul id="stateList"></ul>
-                            <h5>Current Transitions</h5>
-                            <ul id="transitionList"></ul>
-                        </div>
-                        <button id="generateManualFSM" class="btn btn-info">Generate FSM from Manual Input</button>
-                    </div>
+				$("#stateName").val("");
+				$("#isInitial").prop("checked", false);
+				$("#isAccepting").prop("checked", false);
+				updateStateDropdowns();
 
-                    <hr>
+				const stateList = $("#stateList");
+				stateList.empty();
+				manualStates.forEach((state) => {
+					const li = $("<li></li>").text(
+						state.name +
+							(state.isInitial ? " (Initial)" : "") +
+							(state.isAccepting ? " (Accepting)" : "")
+					);
+					stateList.append(li);
+				});
+			});
 
-                    <h3>Input automaton</h3>
-                    <p>
-                        <button id="generateDFA" class="btn">Generate random DFA</button>
-                        <button id="generateNFA" class="btn">Generate random NFA</button>
-                    </p>
-                    <p>
-                        <textarea id="fsm" class="input-block-level" type="text" placeholder="Or paste FSM definition here" spellcheck="false"></textarea>
-                    </p>
-                </div>
+			$("#addTransition").click(function () {
+				const fromState = $("#fromState").val();
+				const toState = $("#toState").val();
+				let symbol = $("#transitionSymbol").val().trim();
+				if (symbol === "ε") symbol = "";
 
-                <div class="span6 column">
-                    <h3>Input regex</h3>
-                    <p>
-                        <button id="generateRegex" class="btn">Generate random regex</button>
-                    </p>
-                    <div class="control-group">
-                        <input id="regex" type="text" class="input-block-level" placeholder="Or write your own regex" spellcheck="false">
-                    </div>
-                </div>
-            </div>
+				if (!fromState || !toState || symbol === "") {
+					alert("Please fill in all fields for the transition");
+					return;
+				}
 
-            <p id="inputError" class="text-error"></p>
-            <hr />
-        </div>
+				manualTransitions.push({from: fromState, symbol: symbol, to: toState});
+				$("#transitionSymbol").val("");
 
-        <div class="container graph">
-            <h3>Transition graph</h3>
-            <div id="automatonGraph"></div>
-        </div>
-    </div>
+				const transitionList = $("#transitionList");
+				transitionList.empty();
+				manualTransitions.forEach((trans) => {
+					const displaySymbol = trans.symbol === "" ? "ε" : trans.symbol;
+					const li = $("<li></li>").text(
+						`${trans.from} --${displaySymbol}--> ${trans.to}`
+					);
+					transitionList.append(li);
+				});
+			});
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/1.2.1/lodash.min.js"></script>
-    <script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
-    <script src="../assets/viz.js"></script>
-    <script src="../../lib/browser/noam.js"></script>
-    <script src="scripts/fsm2regex.js"></script>
+			$("#generateManualFSM").click(function () {
+				const initialStates = manualStates.filter((s) => s.isInitial);
+				if (initialStates.length !== 1) {
+					alert("There must be exactly one initial state");
+					return;
+				}
 
-    <script>
-        let manualStates = [];
-        let manualTransitions = [];
+				const isDFA = $('input[name="automatonType"]:checked').val() === "dfa";
+				const states = manualStates.map((s) => s.name);
+				const acceptingStates = manualStates
+					.filter((s) => s.isAccepting)
+					.map((s) => s.name);
+				const initialState = initialStates[0].name;
+				const alphabet = [
+					...new Set(manualTransitions.map((t) => t.symbol)),
+				].filter((s) => s !== "");
 
-        function updateStateDropdowns() {
-            const fromState = $('#fromState');
-            const toState = $('#toState');
-            fromState.empty();
-            toState.empty();
-            manualStates.forEach(state => {
-                fromState.append($('<option></option>').text(state.name).attr('value', state.name));
-                toState.append($('<option></option>').text(state.name).attr('value', state.name));
-            });
-        }
+				const transitions = [];
+				const transitionMap = new Map();
+				manualTransitions.forEach((trans) => {
+					const key = `${trans.from},${trans.symbol}`;
+					if (!transitionMap.has(key)) {
+						transitionMap.set(key, []);
+					}
+					transitionMap.get(key).push(trans.to);
+				});
 
-        $('#addState').click(function() {
-            const name = $('#stateName').val().trim();
-            if (!name) {
-                alert('State name cannot be empty');
-                return;
-            }
-            if (manualStates.some(s => s.name === name)) {
-                alert('State name must be unique');
-                return;
-            }
-            const isInitial = $('#isInitial').is(':checked');
-            if (isInitial) {
-                manualStates.forEach(s => s.isInitial = false);
-            }
-            const isAccepting = $('#isAccepting').is(':checked');
-            manualStates.push({ name: name, isInitial: isInitial, isAccepting: isAccepting });
-            
-            $('#stateName').val('');
-            $('#isInitial').prop('checked', false);
-            $('#isAccepting').prop('checked', false);
-            updateStateDropdowns();
-            
-            const stateList = $('#stateList');
-            stateList.empty();
-            manualStates.forEach(state => {
-                const li = $('<li></li>').text(state.name +
-                    (state.isInitial ? ' (Initial)' : '') +
-                    (state.isAccepting ? ' (Accepting)' : ''));
-                stateList.append(li);
-            });
-        });
+				transitionMap.forEach((toStates, key) => {
+					const [from, symbol] = key.split(",");
+					transitions.push({
+						fromState: from,
+						symbol: symbol,
+						toStates: toStates,
+					});
+				});
 
-        $('#addTransition').click(function() {
-            const fromState = $('#fromState').val();
-            const toState = $('#toState').val();
-            let symbol = $('#transitionSymbol').val().trim();
-            if (symbol === 'ε') symbol = '';
-            
-            if (!fromState || !toState || symbol === '') {
-                alert('Please fill in all fields for the transition');
-                return;
-            }
-            
-            manualTransitions.push({ from: fromState, symbol: symbol, to: toState });
-            $('#transitionSymbol').val('');
-            
-            const transitionList = $('#transitionList');
-            transitionList.empty();
-            manualTransitions.forEach(trans => {
-                const displaySymbol = trans.symbol === '' ? 'ε' : trans.symbol;
-                const li = $('<li></li>').text(`${trans.from} --${displaySymbol}--> ${trans.to}`);
-                transitionList.append(li);
-            });
-        });
+				const fsmObj = {
+					states: states,
+					alphabet: alphabet,
+					transitions: transitions,
+					initialState: initialState,
+					acceptingStates: acceptingStates,
+				};
 
-        $('#generateManualFSM').click(function() {
-            const initialStates = manualStates.filter(s => s.isInitial);
-            if (initialStates.length !== 1) {
-                alert('There must be exactly one initial state');
-                return;
-            }
-            
-            const isDFA = $('input[name="automatonType"]:checked').val() === 'dfa';
-            const states = manualStates.map(s => s.name);
-            const acceptingStates = manualStates.filter(s => s.isAccepting).map(s => s.name);
-            const initialState = initialStates[0].name;
-            const alphabet = [...new Set(manualTransitions.map(t => t.symbol))].filter(s => s !== '');
-            
-            const transitions = [];
-            const transitionMap = new Map();
-            manualTransitions.forEach(trans => {
-                const key = `${trans.from},${trans.symbol}`;
-                if (!transitionMap.has(key)) {
-                    transitionMap.set(key, []);
-                }
-                transitionMap.get(key).push(trans.to);
-            });
-            
-            transitionMap.forEach((toStates, key) => {
-                const [from, symbol] = key.split(',');
-                transitions.push({
-                    fromState: from,
-                    symbol: symbol,
-                    toStates: toStates
-                });
-            });
-            
-            const fsmObj = {
-                states: states,
-                alphabet: alphabet,
-                transitions: transitions,
-                initialState: initialState,
-                acceptingStates: acceptingStates
-            };
+				if (isDFA) {
+					// Validate DFA
+					let isValidDFA = true;
+					states.forEach((state) => {
+						alphabet.forEach((symbol) => {
+							const key = `${state},${symbol}`;
+							if (
+								!transitionMap.has(key) ||
+								transitionMap.get(key).length !== 1
+							) {
+								isValidDFA = false;
+							}
+						});
+					});
 
-            if (isDFA) {
-                // Validate DFA
-                let isValidDFA = true;
-                states.forEach(state => {
-                    alphabet.forEach(symbol => {
-                        const key = `${state},${symbol}`;
-                        if (!transitionMap.has(key) || transitionMap.get(key).length !== 1) {
-                            isValidDFA = false;
-                        }
-                    });
-                });
-                
-                if (!isValidDFA) {
-                    alert('Manual DFA is not valid - ensure exactly one transition per symbol per state');
-                    return;
-                }
-            }
+					if (!isValidDFA) {
+						alert(
+							"Manual DFA is not valid - ensure exactly one transition per symbol per state"
+						);
+						return;
+					}
+				}
 
-            const serialized = noam.fsm.serializeFsmToString(fsmObj);
-            $('#fsm').val(serialized);
-            // Trigger existing FSM processing
-            $('#fsm').trigger('input');
-        });
+				const serialized = noam.fsm.serializeFsmToString(fsmObj);
+				$("#fsm").val(serialized);
+				// Trigger existing FSM processing
+				$("#fsm").trigger("input");
+			});
 
-        // Modified existing generate buttons
-        $('#generateDFA').click(function() {
-            const dfa = noam.fsm.createRandomFsm(noam.fsm.dfaType, 6, 2, 3);
-            $('#fsm').val(noam.fsm.serializeFsmToString(dfa));
-            $('#fsm').trigger('input');
-        });
+			// Modified existing generate buttons
+			$("#generateDFA").click(function () {
+				const dfa = noam.fsm.createRandomFsm(noam.fsm.dfaType, 6, 2, 3);
+				$("#fsm").val(noam.fsm.serializeFsmToString(dfa));
+				$("#fsm").trigger("input");
+			});
 
-        $('#generateNFA').click(function() {
-            const nfa = noam.fsm.createRandomFsm(noam.fsm.enfaType, 6, 2, 3);
-            $('#fsm').val(noam.fsm.serializeFsmToString(nfa));
-            $('#fsm').trigger('input');
-        });
-    </script>
-</body>
+			$("#generateNFA").click(function () {
+				const nfa = noam.fsm.createRandomFsm(noam.fsm.enfaType, 6, 2, 3);
+				$("#fsm").val(noam.fsm.serializeFsmToString(nfa));
+				$("#fsm").trigger("input");
+			});
+		</script>
+	</body>
 </html>
