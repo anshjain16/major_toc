@@ -25,4 +25,3 @@ TOC Lab is a comprehensive web application designed to help you explore and expe
 - **Bootstrap 5** – For a modern, responsive design.
 - **jQuery** – For simplified DOM manipulation and event handling.
 - **Viz.js** – To generate and display visual representations of automata graphs.
-- **Noam.js** – A library for automata operations and conversions.
