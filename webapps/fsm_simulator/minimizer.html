@@ -296,7 +296,7 @@
 					return;
 				}
 
-				// Check for complete transitions
+			
 				const alphabet = [...new Set(manualTransitions.map((t) => t.symbol))];
 				manualStates.forEach((state) => {
 					alphabet.forEach((symbol) => {
@@ -333,23 +333,18 @@
 					acceptingStates: acceptingStates,
 				};
 
-				// if (!noam.fsm.isDeterministic(dfaObj)) {
-				//     alert('Created automaton is not a valid DFA');
-				//     return;
-				// }
+			
 
 				const serialized = noam.fsm.serializeFsmToString(dfaObj);
 				$("#fsm").val(serialized);
 				$("#createAutomaton").click();
 			});
 
-			// Original functionality
+		
 			$("#createAutomaton").click(function () {
 				try {
 					originalDFA = noam.fsm.parseFsmFromString($("#fsm").val());
-					// if (!noam.fsm.isDeterministic(originalDFA)) {
-					//     throw new Error("Automaton is not a DFA");
-					// }
+					
 					drawOriginalDFA();
 					$("#minimizeDFA").attr("disabled", false);
 				} catch (e) {

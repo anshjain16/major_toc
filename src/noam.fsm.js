@@ -37,9 +37,7 @@ noam.fsm._addStateOrSymbol = function (
 	return obj;
 };
 
-// Adds stateObj as a state to the fsm.
-// Throws an Error if no stateObj is passed or if the same state already exists.
-// Returns the added state object.
+
 noam.fsm.addState = function (fsm, stateObj) {
 	return noam.fsm._addStateOrSymbol(
 		fsm.states,
@@ -49,9 +47,7 @@ noam.fsm.addState = function (fsm, stateObj) {
 	);
 };
 
-// Adds symObj as an alphabet symbol to the fsm.
-// Throws an Error if no symObj is passed or if the same symbol already exists.
-// Returns the added symbol object.
+
 noam.fsm.addSymbol = function (fsm, symObj) {
 	if (noam.util.areEquivalent(symObj, noam.fsm.epsilonSymbol)) {
 		throw new Error("Can't add the epsilon symbol to the alphabet");
@@ -64,9 +60,7 @@ noam.fsm.addSymbol = function (fsm, symObj) {
 	);
 };
 
-// Makes stateObj an accepting state of the fsm.
-// Throws an Error if stateObj is not a state of the fsm or if it is already
-// accepting.
+
 noam.fsm.addAcceptingState = function (fsm, stateObj) {
 	if (!noam.util.contains(fsm.states, stateObj)) {
 		throw new Error("The specified object is not a state of the FSM");
@@ -79,9 +73,7 @@ noam.fsm.addAcceptingState = function (fsm, stateObj) {
 	);
 };
 
-// Sets stateObj as the start
-//  state of the fsm.
-// Throws an Error if stateObj is not a state of the fsm.
+
 noam.fsm.setInitialState = function (fsm, stateObj) {
 	if (!noam.util.contains(fsm.states, stateObj)) {
 		throw new Error("The specified object is not a state of the FSM");
@@ -89,7 +81,7 @@ noam.fsm.setInitialState = function (fsm, stateObj) {
 	fsm.initialState = stateObj;
 };
 
-// Common implementation for addTransition and addEpsilonTransition.
+
 noam.fsm._addTransition = function (
 	fsm,
 	fromState,
@@ -130,18 +122,7 @@ noam.fsm._addTransition = function (
 	}
 };
 
-// Adds a transition from fromState
-//  to the set of states represented by the array
-// toStates, using transitionSymbol.
-// If a transition for this pair of
-//  (fromState, transitionSymbol) already exists,
-// toStates is added to the
-// existing set of destination states.
-// Throws an Error if any of the states
-//  is not actually in the fsm or if the
-// transition symbol is not in the fsm's alphabeth.
-// Note that this means that an Error will be thrown if you try to use this to
-// specify an epsilon transition. For that, use addEpsilonTransition instead.
+
 noam.fsm.addTransition = function (fsm, fromState, toStates, transitionSymbol) {
 	if (!noam.util.contains(fsm.alphabet, transitionSymbol)) {
 		throw new Error(
@@ -151,15 +132,12 @@ noam.fsm.addTransition = function (fsm, fromState, toStates, transitionSymbol) {
 	noam.fsm._addTransition(fsm, fromState, toStates, transitionSymbol);
 };
 
-// Equivalent to addTransition except that there is no transition symbol, i.e. the
-// transition can be executed without consuming an input symbol.
+
 noam.fsm.addEpsilonTransition = function (fsm, fromState, toStates) {
 	noam.fsm._addTransition(fsm, fromState, toStates, noam.fsm.epsilonSymbol);
 };
 
-// end of FSM creation API
 
-// validates a FSM definition
 noam.fsm.validate = function (fsm) {
 	var i, j, k;
 
@@ -276,12 +254,11 @@ noam.fsm.validate = function (fsm) {
 	return true;
 };
 
-// determine if stateObj is an accepting state in fsm
+
 noam.fsm.isAcceptingState = function (fsm, stateObj) {
 	return noam.util.contains(fsm.acceptingStates, stateObj);
 };
 
-// determine fsm type based on transition function
 noam.fsm.determineType = function (fsm) {
 	var fsmType = noam.fsm.dfaType;
 
@@ -308,8 +285,7 @@ noam.fsm.determineType = function (fsm) {
 	return fsmType;
 };
 
-// computes epsilon closure
-// of fsm from states array states
+
 noam.fsm.computeEpsilonClosure = function (fsm, states) {
 	if (!noam.util.containsAll(fsm.states, states)) {
 		throw new Error(
@@ -348,8 +324,7 @@ noam.fsm.computeEpsilonClosure = function (fsm, states) {
 	return targetStates;
 };
 
-// determines the target states from
-// reading symbol at states array states
+
 noam.fsm.makeSimpleTransition = function (fsm, states, symbol) {
 	if (!noam.util.containsAll(fsm.states, states)) {
 		throw new Error(
@@ -383,10 +358,7 @@ noam.fsm.makeSimpleTransition = function (fsm, states, symbol) {
 	return targetStates;
 };
 
-// makes transition from states array states and for input symbol symbol by:
-//   a) computing the epsilon closure of states
-//   b) making a simple transition from resulting states of a)
-//   c) computing the epsilon closure of resulting states of b)
+
 noam.fsm.makeTransition = function (fsm, states, symbol) {
 	if (!noam.util.containsAll(fsm.states, states)) {
 		throw new Error(
@@ -409,8 +381,7 @@ noam.fsm.makeTransition = function (fsm, states, symbol) {
 	return targetStates;
 };
 
-// read a stream of input symbols
-// and determine target states
+
 noam.fsm.readString = function (fsm, inputSymbolStream) {
 	if (!noam.util.containsAll(fsm.alphabet, inputSymbolStream)) {
 		throw new Error(
@@ -427,9 +398,7 @@ noam.fsm.readString = function (fsm, inputSymbolStream) {
 	return states;
 };
 
-// read a stream of input symbols
-// starting from state and make a list of
-// states that were on the transition path
+
 noam.fsm.transitionTrail = function (fsm, state, inputSymbolStream) {
 	if (!noam.util.containsAll(fsm.alphabet, inputSymbolStream)) {
 		throw new Error(
@@ -448,16 +417,14 @@ noam.fsm.transitionTrail = function (fsm, state, inputSymbolStream) {
 	return trail;
 };
 
-// test if a stream of input symbols
-//  leads a fsm to an accepting state
+
 noam.fsm.isStringInLanguage = function (fsm, inputSymbolStream) {
 	var states = noam.fsm.readString(fsm, inputSymbolStream);
 
 	return noam.util.containsAny(fsm.acceptingStates, states);
 };
 
-// pretty print the fsm transition
-// function and accepting states as a table
+
 noam.fsm.printTable = function (fsm) {
 	var Table = require("cli-table");
 	var colHeads = [""].concat(fsm.alphabet);

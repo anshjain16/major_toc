@@ -2,7 +2,7 @@ var noam = {};
 
 noam.util = {};
 
-// taken from http://stackoverflow.com/questions/1068834/object-comparison-in-javascript
+
 noam.util.areEquivalent = function (object1, object2) {
 	if (object1 === object2) {
 		return true;
@@ -73,8 +73,7 @@ noam.util.contains = function (arr, obj, startIndex) {
 	return false;
 };
 
-// returns the index of the leftmost obj instance in arr starting from startIndex or -1
-// if no instance of obj is found
+
 noam.util.index = function (arr, obj, startIndex) {
 	var i = startIndex || 0;
 	while (i < arr.length) {
@@ -86,7 +85,7 @@ noam.util.index = function (arr, obj, startIndex) {
 	return -1;
 };
 
-// check if array arr1 contains all elements from array arr2
+
 noam.util.containsAll = function (arr1, arr2) {
 	for (var i = 0; i < arr2.length; i++) {
 		if (!noam.util.contains(arr1, arr2[i])) {
@@ -97,7 +96,7 @@ noam.util.containsAll = function (arr1, arr2) {
 	return true;
 };
 
-// check if array arr1 contains any element from array arr2
+
 noam.util.containsAny = function (arr1, arr2) {
 	for (var i = 0; i < arr2.length; i++) {
 		if (noam.util.contains(arr1, arr2[i])) {
@@ -108,7 +107,7 @@ noam.util.containsAny = function (arr1, arr2) {
 	return false;
 };
 
-// check if arrays arr1 and arr2 contain the same elements
+
 noam.util.areEqualSets = function (arr1, arr2) {
 	if (arr1.length !== arr2.length) {
 		return false;
@@ -123,7 +122,6 @@ noam.util.areEqualSets = function (arr1, arr2) {
 	return true;
 };
 
-// check if array arr1 contains the set obj
 noam.util.containsSet = function (arr1, obj) {
 	for (var i = 0; i < arr1.length; i++) {
 		if (noam.util.areEqualSets(arr1[i], obj)) {
@@ -134,13 +132,12 @@ noam.util.containsSet = function (arr1, obj) {
 	return false;
 };
 
-// returns an unsorted array representation of the union of the two arrays arr1 and arr2
-// with each element included exactly once, regardless of the count in arr1 and arr2
+
 noam.util.setUnion = function (arr1, arr2) {
 	var res = [];
 	var i;
 	for (i = 0; i < arr1.length; i++) {
-		// this will not include duplicates from arr1
+		
 		if (!noam.util.contains(res, arr1[i])) {
 			res.push(arr1[i]);
 		}
@@ -153,9 +150,6 @@ noam.util.setUnion = function (arr1, arr2) {
 	return res;
 };
 
-// returns an unsorted array representation of the intersection of the two
-// arrays arr1 and arr2 with each element included exactly once, regardless
-// of the count in arr1 and arr2
 noam.util.setIntersection = function (arr1, arr2) {
 	var res = [];
 	var i;
@@ -168,15 +162,12 @@ noam.util.setIntersection = function (arr1, arr2) {
 	return res;
 };
 
-// make a deep clone of an object
+
 noam.util.clone = function (obj) {
 	return JSON.parse(JSON.stringify(obj));
 };
 
-// Returns an object that is basically an integer reference useful for counting
-// across multiple function calls. The current value can be accessed through the
-// value property.
-// See the noam.re.tree.toAutomaton function for a usage example.
+
 noam.util.makeCounter = (function () {
 	function getAndAdvance() {
 		return this.value++;

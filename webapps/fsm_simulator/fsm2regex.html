@@ -383,11 +383,11 @@
 
 				const serialized = noam.fsm.serializeFsmToString(fsmObj);
 				$("#fsm").val(serialized);
-				// Trigger existing FSM processing
+				
 				$("#fsm").trigger("input");
 			});
 
-			// Modified existing generate buttons
+			
 			$("#generateDFA").click(function () {
 				const dfa = noam.fsm.createRandomFsm(noam.fsm.dfaType, 6, 2, 3);
 				$("#fsm").val(noam.fsm.serializeFsmToString(dfa));
